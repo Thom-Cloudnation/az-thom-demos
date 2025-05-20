@@ -1,0 +1,9 @@
+variable "subscription_id" {}
+variable "naming" {}
+variable "config" {}
+variable "location" {}
+variable "prdns_connectivity" {}
+variable "vnet_fe_cidr" {}
+variable "snet_fe_pe_cidr" {}
+variable "snet_fe_cidr" {}
+variable "asp_demo_sku" {}

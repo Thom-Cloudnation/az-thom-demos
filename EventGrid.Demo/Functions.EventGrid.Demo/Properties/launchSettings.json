@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Functions.EventGrid.Demo": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7059",
+      "launchBrowser": false
+    }
+  }
+}

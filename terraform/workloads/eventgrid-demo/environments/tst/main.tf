@@ -14,7 +14,7 @@ module "infrastructure" {
     environment = "tst"
   }
   location        = "uksouth"
-  prdns_connectivity = "privatelink.azurewebsites.net"
+  prdns_connectivity = "privatelink.eventgrid.azure.net"
   vnet_fe_cidr    = "10.1.0.0/24"
   snet_fe_cidr    = "10.1.0.0/27"
   snet_fe_pe_cidr = "10.1.0.32/27"

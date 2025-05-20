@@ -64,6 +64,11 @@ resource "azurerm_linux_function_app" "function" {
       dotnet_version = "9.0"
     }  # Change according to your runtime
   }
+
+  app_settings = {
+    "EventGridDomainEndpoint" = azurerm_eventgrid_domain.eventgrid_domain.endpoint
+    "EventGridAccessKey"      = azurerm_eventgrid_domain.eventgrid_domain.primary_access_key
+  }
 }
 
 resource "azurerm_app_service_virtual_network_swift_connection" "vnet_integration" {

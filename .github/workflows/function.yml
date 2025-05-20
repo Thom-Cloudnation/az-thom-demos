@@ -27,8 +27,8 @@ permissions:
   contents: read        # Required to clone repo
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'func-warmteservice-demo'   # set this to your function app name on Azure
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'EventGrid.Demo/Functions.EventGrid.Demo'       # set this to the path to your function app project, defaults to the repository root
+  AZURE_FUNCTIONAPP_NAME: 'func-eventgrid-demo-tst'   # set this to your function app name on Azure
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'EventGrid.Demo/EventGrid.Demo.Functions'       # set this to the path to your function app project, defaults to the repository root
   DOTNET_VERSION: '9.0.x'                   # set this to the dotnet version to use (e.g. '2.1.x', '3.1.x', '5.0.x')
   ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}

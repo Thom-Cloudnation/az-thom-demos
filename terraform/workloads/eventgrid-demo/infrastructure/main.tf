@@ -51,23 +51,23 @@ resource "azurerm_eventgrid_domain" "eventgrid_domain" {
   public_network_access_enabled = false
 }
 
-resource "azurerm_function_app" "function" {
+resource "azurerm_linux_function_app" "function" {
   name                       = "func-${local.default_suffix}"
   location            = module.rg.groups.demo.location
   resource_group_name = module.rg.groups.demo.name
-  app_service_plan_id        = azurerm_app_service_plan.asp_demo.id
+  service_plan_id        = azurerm_service_plan.asp_demo.id
   storage_account_name       = module.storage.account.name
   storage_account_access_key = module.storage.account.primary_access_key
-  version                    = "~4"
-  os_type                    = "linux"
 
   site_config {
-    linux_fx_version = "dotnet|9"  # Change according to your runtime
+    application_stack {
+      dotnet_version = "9.0"
+    }  # Change according to your runtime
   }
 }
 
 resource "azurerm_app_service_virtual_network_swift_connection" "vnet_integration" {
-  app_service_id = azurerm_function_app.function.id
+  app_service_id = azurerm_linux_function_app.function.id
   subnet_id      = module.vnet_frontend.subnets[local.snet_fe_name].id
 }
 

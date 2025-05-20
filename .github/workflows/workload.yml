@@ -1,0 +1,89 @@
+name: Workload Deployment to Azure
+run-name: ${{ github.event.inputs.terraform_action}} ${{ github.event.inputs.workfolder }}/Environments/${{ github.event.inputs.environment }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      terraform_action:
+        description: "Terraform action"
+        required: true
+        default: "plan"
+        type: choice
+        options:
+          - "plan"
+          - "apply"
+          - "destroy"
+      workfolder:
+        description: "Terraform workfolder"
+        required: true
+        type: choice
+        options:
+          - "eventgrid-demo"
+      environment:
+        description: "Environment"
+        required: true
+        type: choice
+        options:
+          - "tst"
+
+permissions:
+  id-token: write       # Required for OIDC
+  contents: read        # Required to clone repo
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
+jobs:
+  infrastructure:
+    name: "${{ github.event.inputs.workfolder }}"
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/workloads/${{ github.event.inputs.workfolder }}/environments/${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Login to Azure via OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ env.ARM_CLIENT_ID }}
+          tenant-id: ${{ env.ARM_TENANT_ID }}
+          subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        if: github.ref == 'refs/heads/main' && github.event.inputs.terraform_action != 'destroy'
+        run: |
+          export exitcode=0
+          terraform plan -detailed-exitcode -out=tfplan || export exitcode=$?
+
+          echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+
+          if [ $exitcode -eq 1 ]; then
+            echo Terraform Plan Failed!
+            exit 1
+          else 
+            exit 0
+          fi
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event.inputs.terraform_action == 'apply'
+        run: terraform apply -auto-approve tfplan
+
+      - name: Terraform Destroy
+        if: github.ref == 'refs/heads/main' && github.event.inputs.terraform_action == 'destroy'
+        run: terraform destroy -auto-approve

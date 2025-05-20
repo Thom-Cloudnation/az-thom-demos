@@ -58,11 +58,14 @@ resource "azurerm_linux_function_app" "function" {
   service_plan_id        = azurerm_service_plan.asp_demo.id
   storage_account_name       = module.storage.account.name
   storage_account_access_key = module.storage.account.primary_access_key
+  
 
   site_config {
     application_stack {
       dotnet_version = "9.0"
+      use_dotnet_isolated_runtime = true
     }  # Change according to your runtime
+    always_on = true
   }
 
   app_settings = {
